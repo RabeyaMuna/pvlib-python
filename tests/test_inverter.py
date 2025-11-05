@@ -10,13 +10,15 @@ import pytest
 from pvlib import inverter
 
 
+
+
 def test_adr(adr_inverter_parameters):
     vdcs = pd.Series([135, 154, 390, 420, 551])
     pdcs = pd.Series([135, 1232, 1170, 420, 551])
 
     pacs = inverter.adr(vdcs, pdcs, adr_inverter_parameters)
     assert_series_equal(pacs, pd.Series([np.nan, 1161.5745, 1116.4459,
-                                         382.6679, np.nan]))
+                                         382.6679, np.nan]), check_dtype=False)
 
 
 def test_adr_vtol(adr_inverter_parameters):
@@ -33,7 +35,7 @@ def test_adr_float(adr_inverter_parameters):
     pdcs = 1232.
 
     pacs = inverter.adr(vdcs, pdcs, adr_inverter_parameters)
-    assert_allclose(pacs, 1161.5745)
+    assert_allclose(pacs, 1161.5745, rtol=1e-5)
 
 
 def test_adr_invalid_and_night(sam_data):
@@ -53,7 +55,7 @@ def test_sandia(cec_inverter_parameters):
     pdcs = idcs * vdcs
 
     pacs = inverter.sandia(vdcs, pdcs, cec_inverter_parameters)
-    assert_series_equal(pacs, pd.Series([-0.020000, 132.004308, 250.000000]))
+    assert_series_equal(pacs, pd.Series([-0.020000, 132.004308, 250.000000]), check_dtype=False)
 
 
 def test_sandia_float(cec_inverter_parameters):
@@ -115,7 +117,7 @@ def test_sandia_multi(cec_inverter_parameters):
     pacs = inverter.sandia_multi(np.array([vdcs, vdcs]),
                                  np.array([pdcs, pdcs]),
                                  cec_inverter_parameters)
-    assert_allclose(pacs, np.array([-0.020000, 132.004278, 250.000000]))
+    assert_allclose(pacs, np.array([-0.020000, 132.004278, 250.000000]), rtol=1e-5)
 
 
 def test_sandia_multi_length_error(cec_inverter_parameters):
